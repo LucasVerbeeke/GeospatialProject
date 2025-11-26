@@ -1,3 +1,4 @@
+# By : Ayman Mutasim
 
 def show_output_pixel_values(output_path="averaged_test.tif"):
     """
