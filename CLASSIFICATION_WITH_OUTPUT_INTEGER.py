@@ -1,7 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# In[4]:
+# By : Ayman Mutasim
 
 
 import numpy as np
@@ -19,7 +17,7 @@ MAX_CLUSTERS_TO_TEST = 10
 OUTPUT_RASTER_PATH = "OUTPUT FILE PATH AND NAME"
 
 # --------------------------------------------------------
-# CORE K-MEANS LOGIC (Single Band)
+# 4. CORE K-MEANS LOGIC (Single Band)
 # --------------------------------------------------------
 
 def kmeans_single_band(data_2d, k, max_iters=100, tolerance=1e-4, seed=42):
@@ -53,19 +51,19 @@ def kmeans_single_band(data_2d, k, max_iters=100, tolerance=1e-4, seed=42):
             break
         centroids = new_centroids
 
-    # Calculate SSD (Inertia)
+    # 5. Calculate SSD (Inertia)
     final_distances = np.min(np.abs(reshaped_data - centroids), axis=1)
     ssd = np.sum(final_distances**2)
 
     segmented_output = closest_centroids.reshape(x, y)
 
-    # --- MODIFICATION 2: Convert final centroids to integer type (np.int32)
+    # --- MODIFICATION : Convert final centroids to integer type (np.int32)
     final_centroids_int = centroids.astype(np.int32)
 
     return segmented_output, final_centroids_int, ssd
 
 # --------------------------------------------------------
-# NEW FUNCTION: SAVE RASTER OUTPUT
+# 6. NEW FUNCTION: SAVE RASTER OUTPUT
 # --------------------------------------------------------
 
 def save_classified_raster(output_data, output_path, src_profile):
@@ -89,7 +87,7 @@ def save_classified_raster(output_data, output_path, src_profile):
         print(f"ERROR saving raster: {e}")
 
 # --------------------------------------------------------
-# 3. MAIN CLASSIFICATION WORKFLOW (WITH SAVING)
+# 7. MAIN CLASSIFICATION WORKFLOW (WITH SAVING)
 # --------------------------------------------------------
 
 def classify_single_band_raster(file_path, max_k=10, output_path=None):
@@ -201,14 +199,14 @@ def classify_single_band_raster(file_path, max_k=10, output_path=None):
     plt.show()
 
 # ==========================================================
-# USAGE: EXECUTE THE WORKFLOW
+# 8. USAGE: EXECUTE THE WORKFLOW
 # ==========================================================
 
 # Run the entire classification workflow
 classify_single_band_raster(RASTER_FILE_PATH, MAX_CLUSTERS_TO_TEST, OUTPUT_RASTER_PATH)
 
 
-# In[ ]:
+
 
 
 
