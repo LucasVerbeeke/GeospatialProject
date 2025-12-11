@@ -3,7 +3,6 @@
 
 # In[1]:
 
-
 # By : Ayman Mutasim
 
 import numpy as np
