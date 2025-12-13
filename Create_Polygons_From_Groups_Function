@@ -1,0 +1,116 @@
+
+# By : Ayman Mutasim
+
+import rasterio
+from rasterio import features
+from shapely.geometry import shape, mapping
+from shapely.ops import unary_union
+import numpy as np
+import json
+import os
+
+
+# --------------------------------------------------------
+# CONFIGURATION
+# --------------------------------------------------------
+INPUT_RASTER_PATH = "Data/Classified_Clipped_LC_Belgium_2022.tif"
+TARGET_PIXEL_VALUE = 31.0            # <-- change to your centroid / group value
+OUTPUT_GEOJSON_PATH = "group_polygon.geojson"
+
+
+# --------------------------------------------------------
+# FUNCTION: RASTER GROUP → POLYGON
+# --------------------------------------------------------
+def raster_group_to_polygon(raster_path, target_value):
+    """
+    Converts all pixels with the same value into a single polygon.
+
+    Parameters
+    ----------
+    raster_path : str
+        Path to input raster
+    target_value : float or int
+        Pixel value representing the group
+
+    Returns
+    -------
+    shapely.geometry.Polygon or MultiPolygon
+    """
+
+    with rasterio.open(raster_path) as src:
+        data = src.read(1)
+        transform = src.transform
+        crs = src.crs
+
+    # Create mask for the target value
+    mask = data == target_value
+
+    if not np.any(mask):
+        raise ValueError(f"No pixels found with value {target_value}")
+
+    # Polygonize the mask
+    shapes_generator = features.shapes(
+        mask.astype(np.uint8),
+        mask=mask,
+        transform=transform
+    )
+
+    polygons = []
+    for geom, value in shapes_generator:
+        if value == 1:
+            polygons.append(shape(geom))
+
+    # Merge all polygons into one geometry
+    merged_polygon = unary_union(polygons)
+
+    return merged_polygon, crs
+
+
+# --------------------------------------------------------
+# SAVE POLYGON AS GEOJSON
+# --------------------------------------------------------
+def save_polygon_geojson(polygon, crs, output_path, class_value):
+    """
+    Saves polygon geometry to a GeoJSON file.
+    """
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "geometry": mapping(polygon),
+            "properties": {
+                "class_value": class_value
+            }
+        }]
+    }
+
+    with open(output_path, "w") as f:
+        json.dump(geojson, f, indent=2)
+
+    print(f"\n Polygon saved to: {output_path}")
+
+
+# --------------------------------------------------------
+# RUN WORKFLOW
+# --------------------------------------------------------
+if __name__ == "__main__":
+
+    print(" Creating polygon from raster group...")
+
+    polygon, crs = raster_group_to_polygon(
+        INPUT_RASTER_PATH,
+        TARGET_PIXEL_VALUE
+    )
+
+    print(" Polygon created")
+    print(f" Polygon area: {polygon.area}")
+
+    save_polygon_geojson(
+        polygon,
+        crs,
+        OUTPUT_GEOJSON_PATH,
+        TARGET_PIXEL_VALUE
+    )
+
+    print(" Done.")
