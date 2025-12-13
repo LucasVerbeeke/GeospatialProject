@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
 
 # By : Ayman Mutasim
 
@@ -19,9 +15,9 @@ OUTPUT_RASTER_PATH = "OUTPUT FILE PATH AND NAME"
 # PRINT CENTROIDS
 # --------------------------------------------------------
 def show_cluster_centroids(centroids):
-    print("\n🎯 FINAL FLOAT CENTROIDS FROM K-MEANS:")
+    print("\n FINAL FLOAT CENTROIDS FROM K-MEANS:")
     print(np.array(centroids))
-    print(f"\n📌 Number of centroids: {len(centroids)}")
+    print(f"\n Number of centroids: {len(centroids)}")
 
 
 # --------------------------------------------------------
@@ -95,7 +91,7 @@ def classify_single_band_raster(file_path, max_k=10, output_path=None):
     # LOAD RASTER
     with rasterio.open(file_path) as src:
         if src.count != 1:
-            print("❌ Must be single-band raster.")
+            print(" Must be single-band raster.")
             return
 
         profile = src.profile
@@ -123,7 +119,7 @@ def classify_single_band_raster(file_path, max_k=10, output_path=None):
 
     # --- STEP 2: ELBOW USING CURVATURE (KNEEDLE) ---
     optimal_k = find_elbow_kneedle(k_vals, ssd_vals)
-    print(f"\n🔥 Optimal K (Curvature/Kneedle Method): {optimal_k}\n")
+    print(f"\n Optimal K (Curvature/Kneedle Method): {optimal_k}\n")
 
     # --- STEP 3: PLOT ---
     plt.figure(figsize=(8, 5))
