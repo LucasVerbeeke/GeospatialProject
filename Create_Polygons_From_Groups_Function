@@ -15,7 +15,7 @@ import os
 # --------------------------------------------------------
 INPUT_RASTER_PATH = "INPUT FILE PATH"
 TARGET_PIXEL_VALUE = 31.0            # <-- change to your centroid / group value
-OUTPUT_GEOJSON_PATH = "group_polygon.geojson"
+OUTPUT_GEOJSON_PATH = "OUTPUT_FILE.geojson"
 
 
 # --------------------------------------------------------
