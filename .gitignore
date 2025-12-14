@@ -205,3 +205,17 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Rasters
+*.tif
+*.tiff
+*.aux.xml
+
+# Temporary notebooks
+Untitled*.ipynb
+
+# Virtual folders
+.virtual_documents/
+anaconda_projects/
+
+# Placeholders
+OUTPUT FILE PATH AND NAME
