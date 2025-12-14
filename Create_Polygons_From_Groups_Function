@@ -7,7 +7,7 @@ from shapely.geometry import shape, mapping
 from shapely.ops import unary_union
 import numpy as np
 import json
-import os
+import matplotlib.pyplot as plt
 
 
 # --------------------------------------------------------
@@ -24,17 +24,6 @@ OUTPUT_GEOJSON_PATH = "OUTPUT_FILE.geojson"
 def raster_group_to_polygon(raster_path, target_value):
     """
     Converts all pixels with the same value into a single polygon.
-
-    Parameters
-    ----------
-    raster_path : str
-        Path to input raster
-    target_value : float or int
-        Pixel value representing the group
-
-    Returns
-    -------
-    shapely.geometry.Polygon or MultiPolygon
     """
 
     with rasterio.open(raster_path) as src:
@@ -42,13 +31,11 @@ def raster_group_to_polygon(raster_path, target_value):
         transform = src.transform
         crs = src.crs
 
-    # Create mask for the target value
     mask = data == target_value
 
     if not np.any(mask):
         raise ValueError(f"No pixels found with value {target_value}")
 
-    # Polygonize the mask
     shapes_generator = features.shapes(
         mask.astype(np.uint8),
         mask=mask,
@@ -60,10 +47,10 @@ def raster_group_to_polygon(raster_path, target_value):
         if value == 1:
             polygons.append(shape(geom))
 
-    # Merge all polygons into one geometry
     merged_polygon = unary_union(polygons)
 
     return merged_polygon, crs
+
 
 
 # --------------------------------------------------------
@@ -114,3 +101,27 @@ if __name__ == "__main__":
     )
 
     print(" Done.")
+# --------------------------------------------------------
+# PLOT POLYGON
+# --------------------------------------------------------
+def plot_polygon(polygon, class_value):
+    """
+    Visualizes the polygon using matplotlib.
+    """
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+
+    if isinstance(polygon, Polygon):
+        x, y = polygon.exterior.xy
+        ax.fill(x, y, alpha=0.6, edgecolor="black")
+
+    elif isinstance(polygon, MultiPolygon):
+        for poly in polygon.geoms:
+            x, y = poly.exterior.xy
+            ax.fill(x, y, alpha=0.6, edgecolor="black")
+
+    ax.set_title(f"Polygon for Pixel Group = {class_value}")
+    ax.set_aspect("equal")
+    ax.grid(True)
+
+    plt.show()
