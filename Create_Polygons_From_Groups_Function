@@ -8,14 +8,15 @@ from shapely.ops import unary_union
 import numpy as np
 import json
 import matplotlib.pyplot as plt
-
+import os
 
 # --------------------------------------------------------
 # CONFIGURATION
 # --------------------------------------------------------
 INPUT_RASTER_PATH = "INPUT FILE PATH"
 TARGET_PIXEL_VALUE = 31.0            # <-- change to your centroid / group value
-OUTPUT_GEOJSON_PATH = "OUTPUT_FILE.geojson"
+# Folder already exists → just save inside it
+OUTPUT_GEOJSON_PATH = "../THE_CREATED_POLYGONS/MILANO2.geojson"
 
 
 # --------------------------------------------------------
@@ -105,23 +106,18 @@ if __name__ == "__main__":
 # PLOT POLYGON
 # --------------------------------------------------------
 def plot_polygon(polygon, class_value):
-    """
-    Visualizes the polygon using matplotlib.
-    """
 
-    fig, ax = plt.subplots(figsize=(8, 8))
+    plt.figure(figsize=(8, 8))
 
-    if isinstance(polygon, Polygon):
+    if polygon.geom_type == "Polygon":
         x, y = polygon.exterior.xy
-        ax.fill(x, y, alpha=0.6, edgecolor="black")
-
-    elif isinstance(polygon, MultiPolygon):
+        plt.fill(x, y, alpha=0.6, edgecolor="black")
+    else:
         for poly in polygon.geoms:
             x, y = poly.exterior.xy
-            ax.fill(x, y, alpha=0.6, edgecolor="black")
+            plt.fill(x, y, alpha=0.6, edgecolor="black")
 
-    ax.set_title(f"Polygon for Pixel Group = {class_value}")
-    ax.set_aspect("equal")
-    ax.grid(True)
-
+    plt.title(f"Polygon for Pixel Value = {class_value}")
+    plt.axis("equal")
+    plt.grid(True)
     plt.show()
