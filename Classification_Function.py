@@ -2,6 +2,7 @@
 
 import numpy as np
 import rasterio
+import matplotlib.pyplot as plt
 
 
 # --------------------------------------------------------
@@ -63,6 +64,7 @@ def find_elbow_kneedle(k_vals, ssd_vals):
     x1, y1 = x[0], y[0]
     x2, y2 = x[-1], y[-1]
 
+    # Compute the norms
     distances = np.abs(
         (y2 - y1) * x
         - (x2 - x1) * y
@@ -70,13 +72,33 @@ def find_elbow_kneedle(k_vals, ssd_vals):
         - y2 * x1
     ) / np.sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2)
 
+    # Plot the SSD for different values of k
+    plt.plot(k_vals, ssd_vals)
+    plt.title("Elbow method: optimal k selection")
+    plt.xlabel("Number of clusters (k)")
+    plt.ylabel("Sum of Squared Distances (SSD)")
+    plt.show()
+    
     return int(k_vals[np.argmax(distances)])
+
+
+def save_classified_raster(classified_flat, labels, profile, optimal_k, output_filepath):
+    classified_raster = classified_flat.reshape(labels.shape)
+    # Explicit dtype
+    classified_raster = classified_raster.astype(np.float32)
+    out_profile = profile.copy()
+    out_profile.update(dtype="float32", count=1)
+    
+    with rasterio.open(output_filepath, "w", **out_profile) as dst:
+        dst.write(classified_raster, 1)
+    
+    print("Classified raster saved.")
 
 
 # --------------------------------------------------------
 # MAIN CLASSIFICATION FUNCTION
 # --------------------------------------------------------
-def classify_single_band_raster(file_path, max_k=10):
+def classify_single_band_raster(input_filepath, output_filepath, max_k=10):
     """
     Classifies a single-band raster using K-means and elbow method.
 
@@ -86,7 +108,7 @@ def classify_single_band_raster(file_path, max_k=10):
     - optimal_k (int)
     - raster profile (dict)
     """
-    with rasterio.open(file_path) as src:
+    with rasterio.open(input_filepath) as src:
         if src.count != 1:
             raise ValueError("Raster must be single-band.")
 
@@ -109,5 +131,12 @@ def classify_single_band_raster(file_path, max_k=10):
 
     labels, centroids, _ = kmeans_single_band(data, optimal_k)
 
-    return labels, centroids, optimal_k, profile
+    classified_flat = np.zeros(labels.size, float)
+    labels_flat = labels.flatten()
+    
+    for i in range(len(classified_flat)):
+        classified_flat[i] = centroids[labels_flat[i]]
 
+    save_classified_raster(classified_flat, labels, profile, optimal_k, output_filepath)
+
+    return labels, centroids, optimal_k

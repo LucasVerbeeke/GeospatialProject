@@ -1,8 +1,7 @@
 # By: Ayman Mutasim
 
 import rasterio
-from rasterio import features
-from shapely.geometry import shape, mapping
+from shapely.geometry import box, mapping
 from shapely.ops import unary_union
 import numpy as np
 import json
@@ -36,21 +35,18 @@ def raster_group_to_polygon(raster_path, target_value):
     if not np.any(mask):
         raise ValueError(f"No pixels found with value {target_value}")
 
-    shapes_generator = features.shapes(
-        mask.astype(np.uint8),
-        mask=mask,
-        transform=transform
-    )
+    rows, cols = np.where(mask) # Get the coordinates of all pixels within the group
 
-    polygons = [
-        shape(geom)
-        for geom, value in shapes_generator
-        if value == 1
-    ]
+    polygons = []
+    for r, c in zip(rows, cols):
+        x_min, y_max = transform * (c, r)
+        x_max, y_min = transform * (c + 1, r + 1)
+    
+        polygons.append(box(x_min, y_min, x_max, y_max))
 
+    n_pixel = len(polygons)
     merged_polygon = unary_union(polygons)
-
-    return merged_polygon
+    return merged_polygon, n_pixel
 
 
 # --------------------------------------------------------

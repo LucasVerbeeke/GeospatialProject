@@ -21,6 +21,7 @@ class Raster:
         self.lst = lst                       # The list with all pixels, they need to be actual pixel objects
         self.group_sizes = groups            # A list with the sizes of all groups
         self.n_groups = len(groups)          # The number of current groups
+        self.groups_per_cluster = {}         # A dictionary with cluster values as keys and the group indices belonging to the cluster as values
         self.x_shape = shape[1]              # The width of the raster
         self.y_shape = shape[0]              # The height of the raster
 
@@ -90,11 +91,11 @@ class Raster:
     def _group_raster(self, cluster):
         removed_groups_dict = {} # This dictionary will be used later
         for pixel in self.lst:
-            if pixel.cluster == cluster and pixel.group is None:
+            if abs(pixel.cluster - cluster) < 1e-5 and pixel.group is None:
                 neighbours = pixel.neighbours # Get all neighbours of the pixel
                 nb_group_lst = []
                 for nb in neighbours:
-                    if nb.group is not None and nb.cluster == cluster:  # This makes sure only neighbours with an already assigned group inside the same cluster are considered
+                    if nb.group is not None and abs(nb.cluster - cluster) < 1e-5:  # This makes sure only neighbours with an already assigned group inside the same cluster are considered
                         nb_group_lst.append(nb.group)
                 unique_lst = list(set(nb_group_lst))
                 nb_groups_unique = len(unique_lst) # Number of neighbours in different groups
@@ -180,8 +181,10 @@ class Raster:
 
     # The only thing this function does is executing both the _group_raster function and the _remove_empty_groups function at once
     def _grouping_process(self, cluster):
+        already_existing_groups = self.n_groups
         self._group_raster(cluster)
         self._remove_empty_groups()
+        self.groups_per_cluster[cluster] = (already_existing_groups, self.n_groups-1) # This keeps track of which groups are from this cluster
         return self.n_groups, self.group_sizes
 
     # This function creates a 2D-array where all entries are the groups of the pixels if they have one, otherwise it's still the cluster they are in. It is
