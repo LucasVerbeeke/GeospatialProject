@@ -63,11 +63,13 @@ def save_polygon_geojson(polygon, output_path, class_value):
             "type": "Feature",
             "geometry": mapping(polygon),
             "properties": {
-                "class_value": class_value
+                "class_value": int(class_value) # To make sure it is not np.int64
             }
         }]
     }
 
     with open(output_path, "w") as f:
         json.dump(geojson, f, indent=2)
+
+    print("GeoJSON saved")
 

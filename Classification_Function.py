@@ -91,6 +91,10 @@ def save_classified_raster(classified_flat, labels, profile, optimal_k, output_f
     
     with rasterio.open(output_filepath, "w", **out_profile) as dst:
         dst.write(classified_raster, 1)
+
+    plt.imshow(classified_raster)
+    plt.title("CLassified raster")
+    plt.show()
     
     print("Classified raster saved.")
 

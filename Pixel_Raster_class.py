@@ -91,11 +91,11 @@ class Raster:
     def _group_raster(self, cluster):
         removed_groups_dict = {} # This dictionary will be used later
         for pixel in self.lst:
-            if abs(pixel.cluster - cluster) < 1e-5 and pixel.group is None:
+            if abs(pixel.cluster - cluster) < 1e-3 and pixel.group is None:
                 neighbours = pixel.neighbours # Get all neighbours of the pixel
                 nb_group_lst = []
                 for nb in neighbours:
-                    if nb.group is not None and abs(nb.cluster - cluster) < 1e-5:  # This makes sure only neighbours with an already assigned group inside the same cluster are considered
+                    if nb.group is not None and abs(nb.cluster - cluster) < 1e-3:  # This makes sure only neighbours with an already assigned group inside the same cluster are considered
                         nb_group_lst.append(nb.group)
                 unique_lst = list(set(nb_group_lst))
                 nb_groups_unique = len(unique_lst) # Number of neighbours in different groups
