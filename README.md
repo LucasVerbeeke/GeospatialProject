@@ -88,7 +88,7 @@ pip install -r requirements.txt
 
 ### Running the test files
 
-Now the test files can be executed to see how the library works and to verify it. The files Test_Amsterdam, Test_Khartoum and Test_Belgium use a raster of the mentioned regions and show how the library works. The corresponding tif files can be found in the 'Data' folder. Here, the resulting tif files are also stored. The resulting GeoJSON file is stored in the 'THE_CREATED_POLYGONS' folder. Note that especially the notebooks can take several minutes to execute (especially the Amsterdam one). Also, in the Belgium file, the elbow-method selected 2 clusters as the optimal number of clusters. This looks like it is not the best number of clusters, but that is likely because this is determined numerically. There are different ways of selecting the right number of clusters and that can depend on the original data file. Apparently, for the Belgium one, this is not the ideal method.
+Now the test files can be executed to see how the library works and to verify it. The files Test_Amsterdam and Test_Khartoum use a raster of the mentioned regions and show how the library works. The corresponding tif files can be found in the 'Data' folder. Here, the resulting tif files are also stored. The resulting GeoJSON file is stored in the 'THE_CREATED_POLYGONS' folder. Note that the notebooks can take several minutes to execute (especially the Amsterdam one).
 
 ### Using the library
 
