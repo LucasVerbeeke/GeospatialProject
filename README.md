@@ -17,17 +17,18 @@ The project implements three main geospatial processing tasks:
 2. **Grouping connected regions**, where all connected pixels belonging to the same cluster are merged. into a single polygon and exported as a GeoJSON file.
 3. **Creating polygons from the groups** The groups from the previous step are transformed into polygons and exported as a GeoJSON file.
 
-   ## Workflow Overview
+  ## Workflow Overview
 
 ```mermaid
 flowchart TD
-  A[Input: Single-band raster (.tif)] --> B[K-Means Classification<br/>(kneedle elbow for optimal K)]
-  B --> C[Classified Raster<br/>(cluster labels)]
-  C --> D[Group Connected Regions<br/>(same label + neighbors)]
-  D --> E[Groups Raster<br/>(unique id per region)]
-  E --> F[Create Polygons]
-  F --> G[Output: GeoJSON (polygons)]
+  A["Input raster - single band TIF"] --> B["K-Means classification - choose K with kneedle elbow"]
+  B --> C["Classified raster - cluster labels"]
+  C --> D["Group connected regions - same label neighbors"]
+  D --> E["Groups raster - unique id per region"]
+  E --> F["Create polygons from groups"]
+  F --> G["Output GeoJSON polygons"]
 ```
+
 
 
 The steps are described in more detail below.
